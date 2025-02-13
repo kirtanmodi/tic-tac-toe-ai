@@ -20,14 +20,22 @@ Brief description of your project and its main features.
 - Pandas (for data processing)
 - SQLAlchemy (if you're using a database)
 
+### Infrastructure
+- Docker
+- Docker Compose
+- Nginx (reverse proxy)
+
 ## Getting Started
 
 ### Prerequisites
 - Node.js (v14 or higher)
 - Python 3.8 or higher
 - pip
+- Docker & Docker Compose
 
 ### Installation
+
+#### Local Development
 
 1. Clone the repository:
 ```bash
@@ -50,6 +58,18 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
+#### Docker Setup
+
+1. Build and run the containers:
+```bash
+docker-compose up --build
+```
+
+This will start:
+- Frontend container (React) on port 3000
+- Backend container (FastAPI) on port 8000
+- Nginx reverse proxy on port 80
+
 ## Development
 
 ### Frontend
@@ -61,6 +81,34 @@ The backend API will be running at http://localhost:8000
 API documentation is available at:
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc
+
+## Deployment
+
+### Production Setup
+
+1. Configure environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your production settings
+```
+
+2. Deploy using Docker Compose:
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Server Requirements
+- Ubuntu 20.04 or higher
+- Docker
+- Docker Compose
+- Minimum 2GB RAM
+- 20GB storage
+
+### CI/CD Pipeline
+The application uses GitHub Actions for continuous integration and deployment:
+- Automated testing
+- Docker image building
+- Deployment to production server
 
 ## Testing
 
@@ -76,18 +124,31 @@ cd backend
 pytest
 ```
 
+### Docker Testing
+```bash
+docker-compose -f docker-compose.test.yml up --build
+```
+
 ## Project Structure
 ```
 ├── frontend/          # React frontend
 │   ├── src/          # Source files
 │   ├── public/       # Static files
+│   ├── Dockerfile    # Frontend Docker config
 │   └── package.json  # Dependencies
 │
 ├── backend/          # FastAPI backend
 │   ├── app/         # Application code
 │   ├── tests/       # Test files
+│   ├── Dockerfile   # Backend Docker config
 │   └── requirements.txt
 │
+├── nginx/           # Nginx configuration
+│   └── nginx.conf
+│
+├── docker-compose.yml        # Docker compose config
+├── docker-compose.prod.yml   # Production Docker compose
+├── docker-compose.test.yml   # Testing Docker compose
 └── README.md
 ```
 
