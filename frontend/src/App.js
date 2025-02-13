@@ -14,6 +14,7 @@ const App = () => {
   ]);
   const [winner, setWinner] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [aiThinking, setAiThinking] = useState(false);
 
   useEffect(() => {
     fetchGameState();
@@ -30,7 +31,7 @@ const App = () => {
   };
 
   const handleMove = async (row, col) => {
-    if (board[row][col] !== 0 || winner !== null) return;
+    if (board[row][col] !== 0 || winner !== null || loading) return;
     setLoading(true);
 
     try {
@@ -41,6 +42,7 @@ const App = () => {
       // If no winner, AI moves
       if (!winner) {
         try {
+          setAiThinking(true);
           const aiResponse = await axios.get(`${API_URL}/ai-move/`);
           if (aiResponse.data.error) {
             console.error("AI move error:", aiResponse.data.error);
@@ -52,8 +54,9 @@ const App = () => {
           setWinner(newWinner);
         } catch (error) {
           console.error("Error during AI move:", error.message);
-          // Optionally show user-friendly error message
           alert("Something went wrong with the AI move. Please try again.");
+        } finally {
+          setAiThinking(false);
         }
       }
     } catch (error) {
@@ -75,19 +78,25 @@ const App = () => {
 
   return (
     <div className="container">
-      <h1>Tic-Tac-Toe AI</h1>
+      <h1 className="title">Tic-Tac-Toe AI</h1>
       <div className="board">
         {board.map((row, rowIndex) =>
           row.map((cell, colIndex) => (
             <button key={`${rowIndex}-${colIndex}`} className="cell" onClick={() => handleMove(rowIndex, colIndex)} disabled={loading || cell !== 0}>
-              {cell === 1 ? "X" : cell === -1 ? "O" : ""}
+              {cell === 1 ? "×" : cell === -1 ? "○" : ""}
             </button>
           ))
         )}
       </div>
-      {winner !== null && <h2>{winner === 0 ? "It's a Draw!" : winner === 1 ? "You Win!" : "AI Wins!"}</h2>}
-      <button className="reset" onClick={handleReset}>
-        Reset Game
+      {aiThinking && (
+        <div className="thinking-indicator">
+          <div className="thinking-spinner"></div>
+          <span>AI is thinking...</span>
+        </div>
+      )}
+      {winner !== null && <div className="game-status">{winner === 0 ? "It's a Draw!" : winner === 1 ? "You Win!" : "AI Wins!"}</div>}
+      <button className="reset" onClick={handleReset} disabled={loading}>
+        New Game
       </button>
     </div>
   );

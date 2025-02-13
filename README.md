@@ -97,6 +97,10 @@ cp .env.example .env
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
+### Cloud Deployment
+The application is deployed on Render and can be accessed at:
+https://dashboard.render.com/web/srv-cun52vd6l47c739bt3r0/deploys/dep-cun5g4lsvqrc73foaku0
+
 ### Server Requirements
 - Ubuntu 20.04 or higher
 - Docker
